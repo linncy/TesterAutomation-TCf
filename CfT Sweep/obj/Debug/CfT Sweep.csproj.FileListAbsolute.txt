@@ -1,0 +1,11 @@
+C:\Users\Lin\Desktop\Project\CfT Sweep\CfT Sweep\bin\Debug\CfT Sweep.exe
+C:\Users\Lin\Desktop\Project\CfT Sweep\CfT Sweep\bin\Debug\CfT Sweep.pdb
+C:\Users\Lin\Desktop\Project\CfT Sweep\CfT Sweep\bin\Debug\Ivi.Visa.dll
+C:\Users\Lin\Desktop\Project\CfT Sweep\CfT Sweep\bin\Debug\Ivi.Visa.xml
+C:\Users\Lin\Desktop\Project\CfT Sweep\CfT Sweep\obj\Debug\CfT Sweep.csprojResolveAssemblyReference.cache
+C:\Users\Lin\Desktop\Project\CfT Sweep\CfT Sweep\obj\Debug\CfT_Sweep.Form1.resources
+C:\Users\Lin\Desktop\Project\CfT Sweep\CfT Sweep\obj\Debug\CfT_Sweep.Properties.Resources.resources
+C:\Users\Lin\Desktop\Project\CfT Sweep\CfT Sweep\obj\Debug\CfT Sweep.csproj.GenerateResource.Cache
+C:\Users\Lin\Desktop\Project\CfT Sweep\CfT Sweep\obj\Debug\CfT Sweep.csproj.CoreCompileInputs.cache
+C:\Users\Lin\Desktop\Project\CfT Sweep\CfT Sweep\obj\Debug\CfT Sweep.exe
+C:\Users\Lin\Desktop\Project\CfT Sweep\CfT Sweep\obj\Debug\CfT Sweep.pdb
