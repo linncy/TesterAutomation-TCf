@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
@@ -80,6 +81,10 @@
             this.txtStopFreq = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label26 = new System.Windows.Forms.Label();
+            this.label27 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
             this.progressBarProgress = new System.Windows.Forms.ProgressBar();
             this.labelUpTime = new System.Windows.Forms.Label();
@@ -93,6 +98,8 @@
             this.btnSave = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
             this.labelVersion = new System.Windows.Forms.Label();
+            this.Test1 = new System.Windows.Forms.Button();
+            this.timerUpTime = new System.Windows.Forms.Timer(this.components);
             this.groupBoxStatus.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureState)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureConn)).BeginInit();
@@ -251,6 +258,7 @@
             this.btnStop.TabIndex = 33;
             this.btnStop.Text = "Stop";
             this.btnStop.UseVisualStyleBackColor = true;
+            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
             // 
             // label13
             // 
@@ -594,6 +602,10 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.label26);
+            this.groupBox2.Controls.Add(this.label27);
+            this.groupBox2.Controls.Add(this.label19);
+            this.groupBox2.Controls.Add(this.label23);
             this.groupBox2.Controls.Add(this.label22);
             this.groupBox2.Controls.Add(this.progressBarProgress);
             this.groupBox2.Controls.Add(this.labelUpTime);
@@ -608,6 +620,46 @@
             this.groupBox2.TabIndex = 6;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Dashboard";
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
+            this.label26.Location = new System.Drawing.Point(443, 57);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(24, 26);
+            this.label26.TabIndex = 11;
+            this.label26.Text = "0";
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.label27.Location = new System.Drawing.Point(409, 29);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(105, 20);
+            this.label27.TabIndex = 10;
+            this.label27.Text = "Next Setpoint";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
+            this.label19.Location = new System.Drawing.Point(332, 57);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(24, 26);
+            this.label19.TabIndex = 9;
+            this.label19.Text = "0";
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.label23.Location = new System.Drawing.Point(324, 29);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(43, 20);
+            this.label23.TabIndex = 8;
+            this.label23.Text = "Loss";
             // 
             // label22
             // 
@@ -650,7 +702,7 @@
             // 
             this.labelNextSetpoint.AutoSize = true;
             this.labelNextSetpoint.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
-            this.labelNextSetpoint.Location = new System.Drawing.Point(240, 57);
+            this.labelNextSetpoint.Location = new System.Drawing.Point(221, 57);
             this.labelNextSetpoint.Name = "labelNextSetpoint";
             this.labelNextSetpoint.Size = new System.Drawing.Size(24, 26);
             this.labelNextSetpoint.TabIndex = 3;
@@ -660,7 +712,7 @@
             // 
             this.label20.AutoSize = true;
             this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.label20.Location = new System.Drawing.Point(206, 29);
+            this.label20.Location = new System.Drawing.Point(187, 29);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(105, 20);
             this.label20.TabIndex = 2;
@@ -739,11 +791,26 @@
             this.labelVersion.Text = "0.1";
             this.labelVersion.Click += new System.EventHandler(this.labelVersion_Click);
             // 
+            // Test1
+            // 
+            this.Test1.Location = new System.Drawing.Point(888, 580);
+            this.Test1.Name = "Test1";
+            this.Test1.Size = new System.Drawing.Size(75, 23);
+            this.Test1.TabIndex = 12;
+            this.Test1.Text = "Test1";
+            this.Test1.UseVisualStyleBackColor = true;
+            this.Test1.Click += new System.EventHandler(this.Test1_Click);
+            // 
+            // timerUpTime
+            // 
+            this.timerUpTime.Tick += new System.EventHandler(this.timerUpTime_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(971, 781);
+            this.Controls.Add(this.Test1);
             this.Controls.Add(this.labelVersion);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.btnSave);
@@ -838,6 +905,12 @@
         private System.Windows.Forms.ProgressBar progressBarProgress;
         private System.Windows.Forms.Label labelUpTime;
         private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.Button Test1;
+        private System.Windows.Forms.Timer timerUpTime;
+        private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label label23;
     }
 }
 

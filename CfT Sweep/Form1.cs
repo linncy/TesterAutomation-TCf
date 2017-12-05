@@ -24,14 +24,23 @@ namespace TCf_Sweep
         int Gp_Unit_order = 0;
         int Rp_Unit_order = 0;
         int i = 0;
-        System.Threading.ThreadStart MonitorThreadStart;
-        System.Threading.Thread MonitorThread;
+        float fRealtimeTemp;
+        float fTargetTemp;
+        float fStepTemp;
+        float fStopTemp;
+        float fError;
+        
+        System.Threading.ThreadStart TempMonitorThreadStart;
+        System.Threading.Thread TempMonitorThread;
+        System.Threading.ThreadStart CfThreadStart;
+        System.Threading.Thread CfThread;
+        System.DateTime UpTime = new System.DateTime(0);
 
         public enum RunState
         {
             noconnection,
             running,
-            pause
+            stop
         }
         RunState state = RunState.noconnection;
 
@@ -198,8 +207,7 @@ namespace TCf_Sweep
             return null;
         }
 
-
-
+        //Initialize LRC Meter and Temp Controller
         private void InitializeInstruments()
         {
             string Comm;
@@ -253,6 +261,19 @@ namespace TCf_Sweep
             formattedIOTEMPCON.WriteLine(Comm);
         }
 
+        private void TempMonitor()
+        {
+            string idnResponse;
+            while (true)
+            {
+                System.Threading.Thread.Sleep(500);
+                formattedIOTEMPCON.WriteLine("input? a");
+                idnResponse = formattedIOTEMPCON.ReadLine().Replace("\n", "");
+                labelRealTimeTemperature.Text = idnResponse;
+                fRealtimeTemp = Convert.ToSingle(idnResponse);
+            }
+        }
+
         private void buttonConn_Click(object sender, EventArgs e)
         {
             if (openGPIB())
@@ -286,8 +307,77 @@ namespace TCf_Sweep
                 MessageBox.Show("Please Connect Instrument.", "No GPIB Connection", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-            InitializeInstruments();
+            InitializeInstruments();//Initialize LRC Meter and Temp Controller
+            timerUpTime.Interval = 1000; //Initialize UpTime timer
+            UpTime = new System.DateTime(0); //Initialize UpTime timer
+            timerUpTime.Start(); //UpTime timer Start
 
+            state = RunState.running;
+            //Temp Monitor Thread Start
+            TempMonitorThreadStart = new System.Threading.ThreadStart(TempMonitor);
+            TempMonitorThread = new System.Threading.Thread(TempMonitorThreadStart);
+            TempMonitorThread.IsBackground = true;
+            TempMonitorThread.Start();
+
+            //Cf 
+            fTargetTemp = Convert.ToSingle(txtStartTemp.Text);
+            if(fTargetTemp>fRealtimeTemp-fStepTemp*fError)
+            {
+                CfThreadStart = new System.Threading.ThreadStart(RunCf);
+                CfThread = new System.Threading.Thread(CfThreadStart);
+                CfThread.IsBackground = true;
+                CfThread.Start();
+            }
+            else
+            {
+                MessageBox.Show("Program failed to perform T-C-f Sweep, because \"Start Temperature\" was lower than \"Real Time Temperature\". Please lower temperature in the vacuum chamber or raise \"Start Temperature\". ", "Error: Parameter Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                state = RunState.stop;
+                TempMonitorThread.Abort();
+            }
+
+        }
+        public delegate void RunCfEventHandler();
+        public void RunCf()
+        {
+            while(true)
+            {
+                System.Threading.Thread.Sleep(200);
+                if(((fTargetTemp-fStepTemp*fError)<=fRealtimeTemp)&&(fRealtimeTemp<=(fTargetTemp+fStepTemp*fError)))
+                {
+                    // C-f Sweep
+                    //for(i<=x) 1. x=? 2.datalist 3.datagridview 
+
+                    //
+                    fTargetTemp += fStepTemp;
+                    labelNextSetpoint.Text = fTargetTemp.ToString();
+                }
+                else if(fRealtimeTemp<fTargetTemp)
+                {
+                    //
+                }
+                else if(fRealtimeTemp>fTargetTemp)
+                {
+                    //实时温度大于目标采集点温度：1、修正目标采集点温度 2、Loss数据记录
+                }
+            }
+        }
+
+        private void Test1_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Program failed to perform T-C-f Sweep, because \"Start Temperature\" was lower than \"Real Time Temperature\". Please lower temperature in the vacuum chamber or raise \"Start Temperature\". ", "Error: Parameter Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+        }
+
+        private void timerUpTime_Tick(object sender, EventArgs e)
+        {
+            UpTime = UpTime.AddSeconds(1);
+            labelUpTime.Text = UpTime.ToString("mm:ss");
+        }
+
+        private void btnStop_Click(object sender, EventArgs e)
+        {
+            TempMonitorThread.Abort();
+            CfThread.Abort();
         }
     }
 }
