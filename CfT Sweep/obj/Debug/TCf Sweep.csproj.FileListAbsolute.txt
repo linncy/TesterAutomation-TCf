@@ -19,3 +19,13 @@ C:\Users\Lin\Desktop\Project\TesterAutomation-TCf\CfT Sweep\obj\Debug\TCf Sweep.
 C:\Users\Lin\Desktop\Project\TesterAutomation-TCf\CfT Sweep\obj\Debug\TCf Sweep.csproj.CoreCompileInputs.cache
 C:\Users\Lin\Desktop\Project\TesterAutomation-TCf\CfT Sweep\obj\Debug\CfT Sweep.exe
 C:\Users\Lin\Desktop\Project\TesterAutomation-TCf\CfT Sweep\obj\Debug\CfT Sweep.pdb
+\\vmware-host\Shared Folders\Project\TesterAutomation-TCf\CfT Sweep\bin\Debug\CfT Sweep.exe
+\\vmware-host\Shared Folders\Project\TesterAutomation-TCf\CfT Sweep\bin\Debug\CfT Sweep.pdb
+\\vmware-host\Shared Folders\Project\TesterAutomation-TCf\CfT Sweep\bin\Debug\Ivi.Visa.dll
+\\vmware-host\Shared Folders\Project\TesterAutomation-TCf\CfT Sweep\bin\Debug\Ivi.Visa.xml
+\\vmware-host\Shared Folders\Project\TesterAutomation-TCf\CfT Sweep\obj\Debug\TCf Sweep.csprojResolveAssemblyReference.cache
+\\vmware-host\Shared Folders\Project\TesterAutomation-TCf\CfT Sweep\obj\Debug\TCf_Sweep.Form1.resources
+\\vmware-host\Shared Folders\Project\TesterAutomation-TCf\CfT Sweep\obj\Debug\CfT_Sweep.Properties.Resources.resources
+\\vmware-host\Shared Folders\Project\TesterAutomation-TCf\CfT Sweep\obj\Debug\TCf Sweep.csproj.GenerateResource.Cache
+\\vmware-host\Shared Folders\Project\TesterAutomation-TCf\CfT Sweep\obj\Debug\CfT Sweep.exe
+\\vmware-host\Shared Folders\Project\TesterAutomation-TCf\CfT Sweep\obj\Debug\CfT Sweep.pdb

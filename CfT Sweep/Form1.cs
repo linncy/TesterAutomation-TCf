@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using Ivi.Visa;
 using Ivi.Visa.FormattedIO;
+using System.Collections;
 
 namespace TCf_Sweep
 {
@@ -24,12 +25,18 @@ namespace TCf_Sweep
         int Gp_Unit_order = 0;
         int Rp_Unit_order = 0;
         int i = 0;
+        int iNumofLine;
         float fRealtimeTemp;
         float fTargetTemp;
         float fStepTemp;
         float fStopTemp;
         float fError;
-        
+        float fStartf;
+        float fStopf;
+        float fStepf;
+        List<double> listTCfx;
+        List<IList> listTCfy;
+        DataTable dtTCf = new DataTable();
         System.Threading.ThreadStart TempMonitorThreadStart;
         System.Threading.Thread TempMonitorThread;
         System.Threading.ThreadStart CfThreadStart;
@@ -307,11 +314,14 @@ namespace TCf_Sweep
                 MessageBox.Show("Please Connect Instrument.", "No GPIB Connection", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
+            
             InitializeInstruments();//Initialize LRC Meter and Temp Controller
             timerUpTime.Interval = 1000; //Initialize UpTime timer
             UpTime = new System.DateTime(0); //Initialize UpTime timer
             timerUpTime.Start(); //UpTime timer Start
-
+            dtTCf = new DataTable();
+            dgvTCf.DataSource = dtTCf;
+            listTCfy = new List<IList>();
             state = RunState.running;
             //Temp Monitor Thread Start
             TempMonitorThreadStart = new System.Threading.ThreadStart(TempMonitor);
@@ -319,8 +329,22 @@ namespace TCf_Sweep
             TempMonitorThread.IsBackground = true;
             TempMonitorThread.Start();
 
-            //Cf 
+            //Initialize Cf Parameter
             fTargetTemp = Convert.ToSingle(txtStartTemp.Text);
+            fStepTemp = Convert.ToSingle(txtStepTemp.Text);
+            fStopTemp = Convert.ToSingle(txtStopTemp.Text);
+            fStartf = Convert.ToSingle(txtStartFreq.Text);
+            fStopf = Convert.ToSingle(txtStopFreq.Text);
+            fStepf = Convert.ToSingle(txtStepFreq.Text);
+            iNumofLine = Convert.ToInt32((fStopf - fStartf) / fStepf) + 1;
+            dtTCf.Columns.Add("T(K)", typeof(float));
+            for (i=0;i<iNumofLine;i++)
+            {
+                List<double> listchild=new List<double>();
+                listTCfy.Add(listchild);
+                dtTCf.Columns.Add("f=10^"+Convert.ToString(fStartf+fStepf*i)+" Hz", typeof(float));
+            }
+            //Run Cf Thread
             if(fTargetTemp>fRealtimeTemp-fStepTemp*fError)
             {
                 CfThreadStart = new System.Threading.ThreadStart(RunCf);
@@ -339,15 +363,30 @@ namespace TCf_Sweep
         public delegate void RunCfEventHandler();
         public void RunCf()
         {
-            while(true)
+            string CommFreq;
+            string strFreq;
+            string[] FetchResult;
+            DataRow aRow = dtTCf.NewRow();
+            while (true)
             {
                 System.Threading.Thread.Sleep(200);
+                if (fTargetTemp >= fStopTemp)
+                    break;
                 if(((fTargetTemp-fStepTemp*fError)<=fRealtimeTemp)&&(fRealtimeTemp<=(fTargetTemp+fStepTemp*fError)))
                 {
-                    // C-f Sweep
-                    //for(i<=x) 1. x=? 2.datalist 3.datagridview 
-
-                    //
+                    listTCfx.Add(fRealtimeTemp);
+                    aRow[0]=fRealtimeTemp;
+                    for (int i=0;i<iNumofLine;i++)
+                    {
+                        strFreq = Math.Pow(10,fStartf+fStepf*i).ToString("f4");
+                        CommFreq = "Freq" + " " + strFreq + "Hz";
+                        formattedIOLRC.WriteLine(CommFreq);
+                        System.Threading.Thread.Sleep(1);
+                        FetchResult = sendCommand("Fetch?");
+                        listTCfy[i].Add(Convert.ToDouble(FetchResult[0]));
+                        aRow[i+1]=(Convert.ToDouble(FetchResult[0]));
+                    }
+                    dgvTCf.Rows.Add(aRow);
                     fTargetTemp += fStepTemp;
                     labelNextSetpoint.Text = fTargetTemp.ToString();
                 }
@@ -364,7 +403,32 @@ namespace TCf_Sweep
 
         private void Test1_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Program failed to perform T-C-f Sweep, because \"Start Temperature\" was lower than \"Real Time Temperature\". Please lower temperature in the vacuum chamber or raise \"Start Temperature\". ", "Error: Parameter Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            
+            listTCfy = new List<IList>();
+            dtTCf = new DataTable();
+            dgvTCf.DataSource = dtTCf;
+            fTargetTemp = Convert.ToSingle(txtStartTemp.Text);
+            fStepTemp = Convert.ToSingle(txtStepTemp.Text);
+            fStopTemp = Convert.ToSingle(txtStopTemp.Text);
+            fStartf = Convert.ToSingle(txtStartFreq.Text);
+            fStopf = Convert.ToSingle(txtStopFreq.Text);
+            fStepf = Convert.ToSingle(txtStepFreq.Text);
+            iNumofLine = Convert.ToInt32((fStopf - fStartf) / fStepf) + 1;
+            dtTCf.Columns.Add("T(K)", typeof(float));
+            for (int i = 0; i < iNumofLine; i++)
+            {
+                List<double> listchild = new List<double>();
+                listTCfy.Add(listchild);
+                dtTCf.Columns.Add("f=10^" + Convert.ToString(fStartf + fStepf * i) + " Hz", typeof(float));
+            }
+            MessageBox.Show(Convert.ToString(iNumofLine), "Error: Parameter Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            DataRow aRow = dtTCf.NewRow();
+            aRow[0]=10.116F;
+            for (int i = 0; i < iNumofLine; i++)
+            {
+                aRow[i+1]=i;
+            }
+            dtTCf.Rows.Add(aRow);
 
         }
 
@@ -378,6 +442,11 @@ namespace TCf_Sweep
         {
             TempMonitorThread.Abort();
             CfThread.Abort();
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            DataGridViewToCSV(dgvTCf);
         }
     }
 }

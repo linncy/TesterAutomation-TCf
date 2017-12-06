@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.groupBoxStatus = new System.Windows.Forms.GroupBox();
             this.pictureState = new System.Windows.Forms.PictureBox();
             this.buttonConn = new System.Windows.Forms.Button();
@@ -94,7 +94,7 @@
             this.labelRealTimeTemperature = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.dgvTCf = new System.Windows.Forms.DataGridView();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
             this.labelVersion = new System.Windows.Forms.Label();
@@ -108,7 +108,7 @@
             this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvTCf)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBoxStatus
@@ -120,9 +120,9 @@
             this.groupBoxStatus.Controls.Add(this.label2);
             this.groupBoxStatus.Controls.Add(this.labelState_Value);
             this.groupBoxStatus.Controls.Add(this.labelState);
-            this.groupBoxStatus.Location = new System.Drawing.Point(12, 12);
+            this.groupBoxStatus.Location = new System.Drawing.Point(12, 11);
             this.groupBoxStatus.Name = "groupBoxStatus";
-            this.groupBoxStatus.Size = new System.Drawing.Size(166, 117);
+            this.groupBoxStatus.Size = new System.Drawing.Size(166, 108);
             this.groupBoxStatus.TabIndex = 4;
             this.groupBoxStatus.TabStop = false;
             this.groupBoxStatus.Text = "Status";
@@ -130,18 +130,18 @@
             // pictureState
             // 
             this.pictureState.Image = global::CfT_Sweep.Properties.Resources.red;
-            this.pictureState.Location = new System.Drawing.Point(141, 86);
+            this.pictureState.Location = new System.Drawing.Point(141, 79);
             this.pictureState.Name = "pictureState";
-            this.pictureState.Size = new System.Drawing.Size(19, 17);
+            this.pictureState.Size = new System.Drawing.Size(19, 16);
             this.pictureState.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureState.TabIndex = 5;
             this.pictureState.TabStop = false;
             // 
             // buttonConn
             // 
-            this.buttonConn.Location = new System.Drawing.Point(9, 19);
+            this.buttonConn.Location = new System.Drawing.Point(9, 18);
             this.buttonConn.Name = "buttonConn";
-            this.buttonConn.Size = new System.Drawing.Size(151, 23);
+            this.buttonConn.Size = new System.Drawing.Size(151, 21);
             this.buttonConn.TabIndex = 4;
             this.buttonConn.Text = "Connect Instrument";
             this.buttonConn.UseVisualStyleBackColor = true;
@@ -150,9 +150,9 @@
             // pictureConn
             // 
             this.pictureConn.Image = global::CfT_Sweep.Properties.Resources.red;
-            this.pictureConn.Location = new System.Drawing.Point(141, 57);
+            this.pictureConn.Location = new System.Drawing.Point(141, 53);
             this.pictureConn.Name = "pictureConn";
-            this.pictureConn.Size = new System.Drawing.Size(19, 17);
+            this.pictureConn.Size = new System.Drawing.Size(19, 16);
             this.pictureConn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureConn.TabIndex = 4;
             this.pictureConn.TabStop = false;
@@ -161,7 +161,7 @@
             // 
             this.labelConn_Value.AutoSize = true;
             this.labelConn_Value.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.labelConn_Value.Location = new System.Drawing.Point(85, 57);
+            this.labelConn_Value.Location = new System.Drawing.Point(85, 53);
             this.labelConn_Value.Name = "labelConn_Value";
             this.labelConn_Value.Size = new System.Drawing.Size(30, 17);
             this.labelConn_Value.TabIndex = 4;
@@ -171,7 +171,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.label2.Location = new System.Drawing.Point(6, 57);
+            this.label2.Location = new System.Drawing.Point(6, 53);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(83, 17);
             this.label2.TabIndex = 3;
@@ -181,7 +181,7 @@
             // 
             this.labelState_Value.AutoSize = true;
             this.labelState_Value.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.labelState_Value.Location = new System.Drawing.Point(51, 86);
+            this.labelState_Value.Location = new System.Drawing.Point(51, 79);
             this.labelState_Value.Name = "labelState_Value";
             this.labelState_Value.Size = new System.Drawing.Size(87, 17);
             this.labelState_Value.TabIndex = 2;
@@ -191,7 +191,7 @@
             // 
             this.labelState.AutoSize = true;
             this.labelState.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.labelState.Location = new System.Drawing.Point(6, 86);
+            this.labelState.Location = new System.Drawing.Point(6, 79);
             this.labelState.Name = "labelState";
             this.labelState.Size = new System.Drawing.Size(52, 17);
             this.labelState.TabIndex = 1;
@@ -233,18 +233,18 @@
             this.groupBox1.Controls.Add(this.txtStepFreq);
             this.groupBox1.Controls.Add(this.txtStopFreq);
             this.groupBox1.Controls.Add(this.label8);
-            this.groupBox1.Location = new System.Drawing.Point(12, 135);
+            this.groupBox1.Location = new System.Drawing.Point(12, 125);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(166, 631);
+            this.groupBox1.Size = new System.Drawing.Size(166, 582);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "T-C-f Sweep";
             // 
             // btnCalculate
             // 
-            this.btnCalculate.Location = new System.Drawing.Point(10, 536);
+            this.btnCalculate.Location = new System.Drawing.Point(10, 495);
             this.btnCalculate.Name = "btnCalculate";
-            this.btnCalculate.Size = new System.Drawing.Size(81, 25);
+            this.btnCalculate.Size = new System.Drawing.Size(81, 23);
             this.btnCalculate.TabIndex = 34;
             this.btnCalculate.Text = "Calculate";
             this.btnCalculate.UseVisualStyleBackColor = true;
@@ -252,9 +252,9 @@
             // btnStop
             // 
             this.btnStop.Enabled = false;
-            this.btnStop.Location = new System.Drawing.Point(10, 598);
+            this.btnStop.Location = new System.Drawing.Point(10, 552);
             this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(81, 25);
+            this.btnStop.Size = new System.Drawing.Size(81, 23);
             this.btnStop.TabIndex = 33;
             this.btnStop.Text = "Stop";
             this.btnStop.UseVisualStyleBackColor = true;
@@ -263,17 +263,17 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(95, 315);
+            this.label13.Location = new System.Drawing.Point(95, 291);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(22, 13);
+            this.label13.Size = new System.Drawing.Size(17, 12);
             this.label13.TabIndex = 54;
             this.label13.Text = "mV";
             // 
             // btnStart
             // 
-            this.btnStart.Location = new System.Drawing.Point(10, 567);
+            this.btnStart.Location = new System.Drawing.Point(10, 523);
             this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(81, 25);
+            this.btnStart.Size = new System.Drawing.Size(81, 23);
             this.btnStart.TabIndex = 32;
             this.btnStart.Text = "Start";
             this.btnStart.UseVisualStyleBackColor = true;
@@ -282,27 +282,27 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(7, 233);
+            this.label9.Location = new System.Drawing.Point(7, 215);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(26, 13);
+            this.label9.Size = new System.Drawing.Size(23, 12);
             this.label9.TabIndex = 48;
             this.label9.Text = "10E";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(95, 35);
+            this.label4.Location = new System.Drawing.Point(95, 32);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(14, 13);
+            this.label4.Size = new System.Drawing.Size(11, 12);
             this.label4.TabIndex = 30;
             this.label4.Text = "K";
             // 
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(95, 272);
+            this.label14.Location = new System.Drawing.Point(95, 251);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(14, 13);
+            this.label14.Size = new System.Drawing.Size(11, 12);
             this.label14.TabIndex = 53;
             this.label14.Text = "V";
             // 
@@ -310,9 +310,9 @@
             // 
             this.groupBox5.Controls.Add(this.rbSeries);
             this.groupBox5.Controls.Add(this.rbParallel);
-            this.groupBox5.Location = new System.Drawing.Point(8, 471);
+            this.groupBox5.Location = new System.Drawing.Point(8, 435);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(117, 61);
+            this.groupBox5.Size = new System.Drawing.Size(130, 56);
             this.groupBox5.TabIndex = 27;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Equivalent Circuit";
@@ -320,9 +320,9 @@
             // rbSeries
             // 
             this.rbSeries.AutoSize = true;
-            this.rbSeries.Location = new System.Drawing.Point(6, 42);
+            this.rbSeries.Location = new System.Drawing.Point(6, 39);
             this.rbSeries.Name = "rbSeries";
-            this.rbSeries.Size = new System.Drawing.Size(54, 17);
+            this.rbSeries.Size = new System.Drawing.Size(59, 16);
             this.rbSeries.TabIndex = 2;
             this.rbSeries.TabStop = true;
             this.rbSeries.Text = "Series";
@@ -332,9 +332,9 @@
             // 
             this.rbParallel.AutoSize = true;
             this.rbParallel.Checked = true;
-            this.rbParallel.Location = new System.Drawing.Point(6, 19);
+            this.rbParallel.Location = new System.Drawing.Point(6, 18);
             this.rbParallel.Name = "rbParallel";
-            this.rbParallel.Size = new System.Drawing.Size(59, 17);
+            this.rbParallel.Size = new System.Drawing.Size(71, 16);
             this.rbParallel.TabIndex = 1;
             this.rbParallel.TabStop = true;
             this.rbParallel.Text = "Parallel";
@@ -342,44 +342,44 @@
             // 
             // txtAveRate
             // 
-            this.txtAveRate.Location = new System.Drawing.Point(9, 448);
+            this.txtAveRate.Location = new System.Drawing.Point(9, 414);
             this.txtAveRate.Name = "txtAveRate";
-            this.txtAveRate.Size = new System.Drawing.Size(81, 20);
+            this.txtAveRate.Size = new System.Drawing.Size(81, 21);
             this.txtAveRate.TabIndex = 26;
             this.txtAveRate.Text = "4";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 16);
+            this.label3.Location = new System.Drawing.Point(6, 15);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(92, 13);
+            this.label3.Size = new System.Drawing.Size(107, 12);
             this.label3.TabIndex = 29;
             this.label3.Text = "Start Temperature";
             // 
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(8, 432);
+            this.label17.Location = new System.Drawing.Point(8, 399);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(81, 13);
+            this.label17.Size = new System.Drawing.Size(89, 12);
             this.label17.TabIndex = 25;
             this.label17.Text = "Averaging Rate";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 136);
+            this.label5.Location = new System.Drawing.Point(6, 126);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(82, 13);
+            this.label5.Size = new System.Drawing.Size(95, 12);
             this.label5.TabIndex = 38;
             this.label5.Text = "Start Frequency";
             // 
             // txtOscVoltage
             // 
-            this.txtOscVoltage.Location = new System.Drawing.Point(8, 311);
+            this.txtOscVoltage.Location = new System.Drawing.Point(8, 287);
             this.txtOscVoltage.Name = "txtOscVoltage";
-            this.txtOscVoltage.Size = new System.Drawing.Size(81, 20);
+            this.txtOscVoltage.Size = new System.Drawing.Size(81, 21);
             this.txtOscVoltage.TabIndex = 52;
             this.txtOscVoltage.Text = "25";
             // 
@@ -388,9 +388,9 @@
             this.groupBox4.Controls.Add(this.rbInterLong);
             this.groupBox4.Controls.Add(this.rbInterMedium);
             this.groupBox4.Controls.Add(this.rbInterShort);
-            this.groupBox4.Location = new System.Drawing.Point(6, 337);
+            this.groupBox4.Location = new System.Drawing.Point(6, 311);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(131, 90);
+            this.groupBox4.Size = new System.Drawing.Size(131, 83);
             this.groupBox4.TabIndex = 24;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Intergration Time";
@@ -398,9 +398,9 @@
             // rbInterLong
             // 
             this.rbInterLong.AutoSize = true;
-            this.rbInterLong.Location = new System.Drawing.Point(6, 67);
+            this.rbInterLong.Location = new System.Drawing.Point(6, 62);
             this.rbInterLong.Name = "rbInterLong";
-            this.rbInterLong.Size = new System.Drawing.Size(55, 17);
+            this.rbInterLong.Size = new System.Drawing.Size(47, 16);
             this.rbInterLong.TabIndex = 2;
             this.rbInterLong.Text = "LONG";
             this.rbInterLong.UseVisualStyleBackColor = true;
@@ -409,9 +409,9 @@
             // 
             this.rbInterMedium.AutoSize = true;
             this.rbInterMedium.Checked = true;
-            this.rbInterMedium.Location = new System.Drawing.Point(6, 44);
+            this.rbInterMedium.Location = new System.Drawing.Point(6, 41);
             this.rbInterMedium.Name = "rbInterMedium";
-            this.rbInterMedium.Size = new System.Drawing.Size(69, 17);
+            this.rbInterMedium.Size = new System.Drawing.Size(59, 16);
             this.rbInterMedium.TabIndex = 1;
             this.rbInterMedium.TabStop = true;
             this.rbInterMedium.Text = "MEDIUM";
@@ -420,183 +420,183 @@
             // rbInterShort
             // 
             this.rbInterShort.AutoSize = true;
-            this.rbInterShort.Location = new System.Drawing.Point(6, 22);
+            this.rbInterShort.Location = new System.Drawing.Point(6, 20);
             this.rbInterShort.Name = "rbInterShort";
-            this.rbInterShort.Size = new System.Drawing.Size(63, 17);
+            this.rbInterShort.Size = new System.Drawing.Size(53, 16);
             this.rbInterShort.TabIndex = 0;
             this.rbInterShort.Text = "SHORT";
             this.rbInterShort.UseVisualStyleBackColor = true;
             // 
             // txtStartFreq
             // 
-            this.txtStartFreq.Location = new System.Drawing.Point(38, 152);
+            this.txtStartFreq.Location = new System.Drawing.Point(38, 140);
             this.txtStartFreq.Name = "txtStartFreq";
-            this.txtStartFreq.Size = new System.Drawing.Size(36, 20);
+            this.txtStartFreq.Size = new System.Drawing.Size(36, 21);
             this.txtStartFreq.TabIndex = 37;
             this.txtStartFreq.Text = "3";
             // 
             // label25
             // 
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(95, 74);
+            this.label25.Location = new System.Drawing.Point(95, 68);
             this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(14, 13);
+            this.label25.Size = new System.Drawing.Size(11, 12);
             this.label25.TabIndex = 22;
             this.label25.Text = "K";
             // 
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(6, 295);
+            this.label15.Location = new System.Drawing.Point(6, 272);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(94, 13);
+            this.label15.Size = new System.Drawing.Size(119, 12);
             this.label15.TabIndex = 51;
             this.label15.Text = "Oscillation Voltage";
             // 
             // label24
             // 
             this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(95, 117);
+            this.label24.Location = new System.Drawing.Point(95, 108);
             this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(14, 13);
+            this.label24.Size = new System.Drawing.Size(11, 12);
             this.label24.TabIndex = 23;
             this.label24.Text = "K";
             // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(81, 233);
+            this.label11.Location = new System.Drawing.Point(81, 215);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(20, 13);
+            this.label11.Size = new System.Drawing.Size(17, 12);
             this.label11.TabIndex = 47;
             this.label11.Text = "Hz";
             // 
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(6, 253);
+            this.label16.Location = new System.Drawing.Point(6, 234);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(110, 13);
+            this.label16.Size = new System.Drawing.Size(119, 12);
             this.label16.TabIndex = 50;
             this.label16.Text = "Measurement Voltage";
             // 
             // txtMeasVoltage
             // 
-            this.txtMeasVoltage.Location = new System.Drawing.Point(8, 269);
+            this.txtMeasVoltage.Location = new System.Drawing.Point(8, 248);
             this.txtMeasVoltage.Name = "txtMeasVoltage";
-            this.txtMeasVoltage.Size = new System.Drawing.Size(81, 20);
+            this.txtMeasVoltage.Size = new System.Drawing.Size(81, 21);
             this.txtMeasVoltage.TabIndex = 49;
             this.txtMeasVoltage.Text = "0";
             // 
             // txtStopTemp
             // 
-            this.txtStopTemp.Location = new System.Drawing.Point(8, 71);
+            this.txtStopTemp.Location = new System.Drawing.Point(8, 66);
             this.txtStopTemp.Name = "txtStopTemp";
-            this.txtStopTemp.Size = new System.Drawing.Size(81, 20);
+            this.txtStopTemp.Size = new System.Drawing.Size(81, 21);
             this.txtStopTemp.TabIndex = 18;
             this.txtStopTemp.Text = "320";
             // 
             // txtStepTemp
             // 
-            this.txtStepTemp.Location = new System.Drawing.Point(8, 113);
+            this.txtStepTemp.Location = new System.Drawing.Point(8, 104);
             this.txtStepTemp.Name = "txtStepTemp";
-            this.txtStepTemp.Size = new System.Drawing.Size(81, 20);
+            this.txtStepTemp.Size = new System.Drawing.Size(81, 21);
             this.txtStepTemp.TabIndex = 21;
             this.txtStepTemp.Text = "0.4";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(80, 155);
+            this.label1.Location = new System.Drawing.Point(80, 143);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(20, 13);
+            this.label1.Size = new System.Drawing.Size(17, 12);
             this.label1.TabIndex = 39;
             this.label1.Text = "Hz";
             // 
             // label32
             // 
             this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(6, 97);
+            this.label32.Location = new System.Drawing.Point(6, 90);
             this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(92, 13);
+            this.label32.Size = new System.Drawing.Size(101, 12);
             this.label32.TabIndex = 20;
             this.label32.Text = "Temperature Step";
             // 
             // label33
             // 
             this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(6, 55);
+            this.label33.Location = new System.Drawing.Point(6, 51);
             this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(92, 13);
+            this.label33.Size = new System.Drawing.Size(101, 12);
             this.label33.TabIndex = 19;
             this.label33.Text = "Stop Temperature";
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(6, 155);
+            this.label10.Location = new System.Drawing.Point(6, 143);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(26, 13);
+            this.label10.Size = new System.Drawing.Size(23, 12);
             this.label10.TabIndex = 40;
             this.label10.Text = "10E";
             // 
             // txtStartTemp
             // 
-            this.txtStartTemp.Location = new System.Drawing.Point(8, 32);
+            this.txtStartTemp.Location = new System.Drawing.Point(8, 30);
             this.txtStartTemp.Name = "txtStartTemp";
-            this.txtStartTemp.Size = new System.Drawing.Size(81, 20);
+            this.txtStartTemp.Size = new System.Drawing.Size(81, 21);
             this.txtStartTemp.TabIndex = 28;
             this.txtStartTemp.Text = "10";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(7, 194);
+            this.label6.Location = new System.Drawing.Point(7, 179);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(26, 13);
+            this.label6.Size = new System.Drawing.Size(23, 12);
             this.label6.TabIndex = 44;
             this.label6.Text = "10E";
             // 
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(7, 214);
+            this.label12.Location = new System.Drawing.Point(7, 198);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(82, 13);
+            this.label12.Size = new System.Drawing.Size(89, 12);
             this.label12.TabIndex = 46;
             this.label12.Text = "Frequency Step";
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(81, 194);
+            this.label7.Location = new System.Drawing.Point(81, 179);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(20, 13);
+            this.label7.Size = new System.Drawing.Size(17, 12);
             this.label7.TabIndex = 43;
             this.label7.Text = "Hz";
             // 
             // txtStepFreq
             // 
-            this.txtStepFreq.Location = new System.Drawing.Point(39, 230);
+            this.txtStepFreq.Location = new System.Drawing.Point(39, 212);
             this.txtStepFreq.Name = "txtStepFreq";
-            this.txtStepFreq.Size = new System.Drawing.Size(36, 20);
+            this.txtStepFreq.Size = new System.Drawing.Size(36, 21);
             this.txtStepFreq.TabIndex = 45;
             this.txtStepFreq.Text = "0.5";
             // 
             // txtStopFreq
             // 
-            this.txtStopFreq.Location = new System.Drawing.Point(39, 191);
+            this.txtStopFreq.Location = new System.Drawing.Point(39, 176);
             this.txtStopFreq.Name = "txtStopFreq";
-            this.txtStopFreq.Size = new System.Drawing.Size(36, 20);
+            this.txtStopFreq.Size = new System.Drawing.Size(36, 21);
             this.txtStopFreq.TabIndex = 41;
             this.txtStopFreq.Text = "6";
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(7, 175);
+            this.label8.Location = new System.Drawing.Point(7, 162);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(82, 13);
+            this.label8.Size = new System.Drawing.Size(89, 12);
             this.label8.TabIndex = 42;
             this.label8.Text = "Stop Frequency";
             // 
@@ -614,9 +614,9 @@
             this.groupBox2.Controls.Add(this.label20);
             this.groupBox2.Controls.Add(this.labelRealTimeTemperature);
             this.groupBox2.Controls.Add(this.label18);
-            this.groupBox2.Location = new System.Drawing.Point(184, 12);
+            this.groupBox2.Location = new System.Drawing.Point(184, 11);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(779, 91);
+            this.groupBox2.Size = new System.Drawing.Size(779, 84);
             this.groupBox2.TabIndex = 6;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Dashboard";
@@ -625,7 +625,7 @@
             // 
             this.label26.AutoSize = true;
             this.label26.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
-            this.label26.Location = new System.Drawing.Point(443, 57);
+            this.label26.Location = new System.Drawing.Point(443, 53);
             this.label26.Name = "label26";
             this.label26.Size = new System.Drawing.Size(24, 26);
             this.label26.TabIndex = 11;
@@ -635,7 +635,7 @@
             // 
             this.label27.AutoSize = true;
             this.label27.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.label27.Location = new System.Drawing.Point(409, 29);
+            this.label27.Location = new System.Drawing.Point(409, 27);
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(105, 20);
             this.label27.TabIndex = 10;
@@ -645,7 +645,7 @@
             // 
             this.label19.AutoSize = true;
             this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
-            this.label19.Location = new System.Drawing.Point(332, 57);
+            this.label19.Location = new System.Drawing.Point(332, 53);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(24, 26);
             this.label19.TabIndex = 9;
@@ -655,7 +655,7 @@
             // 
             this.label23.AutoSize = true;
             this.label23.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.label23.Location = new System.Drawing.Point(324, 29);
+            this.label23.Location = new System.Drawing.Point(324, 27);
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(43, 20);
             this.label23.TabIndex = 8;
@@ -665,7 +665,7 @@
             // 
             this.label22.AutoSize = true;
             this.label22.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.label22.Location = new System.Drawing.Point(686, 29);
+            this.label22.Location = new System.Drawing.Point(686, 27);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(72, 20);
             this.label22.TabIndex = 7;
@@ -673,16 +673,16 @@
             // 
             // progressBarProgress
             // 
-            this.progressBarProgress.Location = new System.Drawing.Point(672, 57);
+            this.progressBarProgress.Location = new System.Drawing.Point(672, 53);
             this.progressBarProgress.Name = "progressBarProgress";
-            this.progressBarProgress.Size = new System.Drawing.Size(100, 23);
+            this.progressBarProgress.Size = new System.Drawing.Size(100, 21);
             this.progressBarProgress.TabIndex = 6;
             // 
             // labelUpTime
             // 
             this.labelUpTime.AutoSize = true;
             this.labelUpTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
-            this.labelUpTime.Location = new System.Drawing.Point(594, 57);
+            this.labelUpTime.Location = new System.Drawing.Point(594, 53);
             this.labelUpTime.Name = "labelUpTime";
             this.labelUpTime.Size = new System.Drawing.Size(66, 26);
             this.labelUpTime.TabIndex = 5;
@@ -692,7 +692,7 @@
             // 
             this.label21.AutoSize = true;
             this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.label21.Location = new System.Drawing.Point(592, 29);
+            this.label21.Location = new System.Drawing.Point(592, 27);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(68, 20);
             this.label21.TabIndex = 4;
@@ -702,7 +702,7 @@
             // 
             this.labelNextSetpoint.AutoSize = true;
             this.labelNextSetpoint.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
-            this.labelNextSetpoint.Location = new System.Drawing.Point(221, 57);
+            this.labelNextSetpoint.Location = new System.Drawing.Point(221, 53);
             this.labelNextSetpoint.Name = "labelNextSetpoint";
             this.labelNextSetpoint.Size = new System.Drawing.Size(24, 26);
             this.labelNextSetpoint.TabIndex = 3;
@@ -712,7 +712,7 @@
             // 
             this.label20.AutoSize = true;
             this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.label20.Location = new System.Drawing.Point(187, 29);
+            this.label20.Location = new System.Drawing.Point(187, 27);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(105, 20);
             this.label20.TabIndex = 2;
@@ -722,7 +722,7 @@
             // 
             this.labelRealTimeTemperature.AutoSize = true;
             this.labelRealTimeTemperature.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
-            this.labelRealTimeTemperature.Location = new System.Drawing.Point(75, 57);
+            this.labelRealTimeTemperature.Location = new System.Drawing.Point(75, 53);
             this.labelRealTimeTemperature.Name = "labelRealTimeTemperature";
             this.labelRealTimeTemperature.Size = new System.Drawing.Size(24, 26);
             this.labelRealTimeTemperature.TabIndex = 1;
@@ -732,7 +732,7 @@
             // 
             this.label18.AutoSize = true;
             this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.label18.Location = new System.Drawing.Point(6, 29);
+            this.label18.Location = new System.Drawing.Point(6, 27);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(175, 20);
             this.label18.TabIndex = 0;
@@ -740,42 +740,43 @@
             // 
             // chart1
             // 
-            chartArea1.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.chart1.Legends.Add(legend1);
-            this.chart1.Location = new System.Drawing.Point(184, 109);
+            chartArea2.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea2);
+            legend2.Name = "Legend1";
+            this.chart1.Legends.Add(legend2);
+            this.chart1.Location = new System.Drawing.Point(184, 101);
             this.chart1.Name = "chart1";
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.chart1.Series.Add(series1);
-            this.chart1.Size = new System.Drawing.Size(779, 402);
+            series2.ChartArea = "ChartArea1";
+            series2.Legend = "Legend1";
+            series2.Name = "Series1";
+            this.chart1.Series.Add(series2);
+            this.chart1.Size = new System.Drawing.Size(779, 371);
             this.chart1.TabIndex = 7;
             this.chart1.Text = "chart1";
             // 
-            // dataGridView1
+            // dgvTCf
             // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(184, 517);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(698, 249);
-            this.dataGridView1.TabIndex = 8;
+            this.dgvTCf.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvTCf.Location = new System.Drawing.Point(184, 477);
+            this.dgvTCf.Name = "dgvTCf";
+            this.dgvTCf.Size = new System.Drawing.Size(698, 230);
+            this.dgvTCf.TabIndex = 8;
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(888, 517);
+            this.btnSave.Location = new System.Drawing.Point(888, 477);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(75, 23);
+            this.btnSave.Size = new System.Drawing.Size(75, 21);
             this.btnSave.TabIndex = 9;
             this.btnSave.Text = "Save";
             this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(888, 743);
+            this.btnClear.Location = new System.Drawing.Point(888, 686);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(75, 23);
+            this.btnClear.Size = new System.Drawing.Size(75, 21);
             this.btnClear.TabIndex = 10;
             this.btnClear.Text = "Clear";
             this.btnClear.UseVisualStyleBackColor = true;
@@ -784,7 +785,7 @@
             // 
             this.labelVersion.AutoSize = true;
             this.labelVersion.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F);
-            this.labelVersion.Location = new System.Drawing.Point(12, 769);
+            this.labelVersion.Location = new System.Drawing.Point(12, 710);
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(14, 7);
             this.labelVersion.TabIndex = 11;
@@ -793,9 +794,9 @@
             // 
             // Test1
             // 
-            this.Test1.Location = new System.Drawing.Point(888, 580);
+            this.Test1.Location = new System.Drawing.Point(888, 535);
             this.Test1.Name = "Test1";
-            this.Test1.Size = new System.Drawing.Size(75, 23);
+            this.Test1.Size = new System.Drawing.Size(75, 21);
             this.Test1.TabIndex = 12;
             this.Test1.Text = "Test1";
             this.Test1.UseVisualStyleBackColor = true;
@@ -807,14 +808,14 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(971, 781);
+            this.ClientSize = new System.Drawing.Size(971, 721);
             this.Controls.Add(this.Test1);
             this.Controls.Add(this.labelVersion);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.btnSave);
-            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.dgvTCf);
             this.Controls.Add(this.chart1);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -835,7 +836,7 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvTCf)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -893,7 +894,7 @@
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridView dgvTCf;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.Label labelVersion;
