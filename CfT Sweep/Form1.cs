@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using Ivi.Visa;
 using Ivi.Visa.FormattedIO;
 using System.Collections;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace TCf_Sweep
 {
@@ -26,6 +27,9 @@ namespace TCf_Sweep
         int Rp_Unit_order = 0;
         int i = 0;
         int iNumofLine;
+        int iLoss = 0;
+        int iExpectation = 0;
+        int iCompletion = 0;
         float fRealtimeTemp;
         float fTargetTemp;
         float fStepTemp;
@@ -34,13 +38,16 @@ namespace TCf_Sweep
         float fStartf;
         float fStopf;
         float fStepf;
-        List<double> listTCfx;
+        List<float> listTCfx;
         List<IList> listTCfy;
+        List<float> listLossT;
         DataTable dtTCf = new DataTable();
         System.Threading.ThreadStart TempMonitorThreadStart;
         System.Threading.Thread TempMonitorThread;
         System.Threading.ThreadStart CfThreadStart;
         System.Threading.Thread CfThread;
+        System.Threading.ThreadStart plotThreadStart;
+        System.Threading.Thread plotThread;
         System.DateTime UpTime = new System.DateTime(0);
 
         public enum RunState
@@ -214,6 +221,24 @@ namespace TCf_Sweep
             return null;
         }
 
+        private void plot_X_multiY(Chart chart, List<string> tag, List<float> listx, List<IList> listy)
+        {
+
+            chart.Series.Clear();
+            List<Series> series = new List<Series>();
+            for (int i = 0; i < iNumofLine; i++)
+            {
+                Series tempSeries = new Series(tag[i]);
+                tempSeries.ChartType = SeriesChartType.Spline;
+                tempSeries.Points.DataBindXY(listx, listy[i]);
+                series.Add(tempSeries);
+            }
+            for (int i = 0; i < iNumofLine; i++)
+            {
+                chart.Series.Add(series[i]);
+            }
+        }
+
         //Initialize LRC Meter and Temp Controller
         private void InitializeInstruments()
         {
@@ -322,6 +347,7 @@ namespace TCf_Sweep
             dtTCf = new DataTable();
             dgvTCf.DataSource = dtTCf;
             listTCfy = new List<IList>();
+            listLossT = new List<float>();
             state = RunState.running;
             //Temp Monitor Thread Start
             TempMonitorThreadStart = new System.Threading.ThreadStart(TempMonitor);
@@ -344,8 +370,12 @@ namespace TCf_Sweep
                 listTCfy.Add(listchild);
                 dtTCf.Columns.Add("f=10^"+Convert.ToString(fStartf+fStepf*i)+" Hz", typeof(float));
             }
+            iExpectation = Convert.ToInt32(Math.Ceiling(fStopTemp - fTargetTemp) / fStepTemp + 1);
+            labelExpectation.Text = Convert.ToString(iExpectation);
+            iCompletion = 0;
+            labelCompletion.Text = Convert.ToString(iCompletion);
             //Run Cf Thread
-            if(fTargetTemp>fRealtimeTemp-fStepTemp*fError)
+            if (fTargetTemp>fRealtimeTemp-fStepTemp*fError)
             {
                 CfThreadStart = new System.Threading.ThreadStart(RunCf);
                 CfThread = new System.Threading.Thread(CfThreadStart);
@@ -367,43 +397,72 @@ namespace TCf_Sweep
             string strFreq;
             string[] FetchResult;
             DataRow aRow = dtTCf.NewRow();
+            int iCorrectionCoefficient = 0;
             while (true)
             {
+                if (fTargetTemp > fStopTemp)//Complete
+                {
+                    TempMonitorThread.Abort();
+                    MessageBox.Show("Loss:" + Convert.ToString(iLoss), "T-C-f Sweep Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    break;
+                }
+                labelNextSetpoint.Text = fTargetTemp.ToString();
                 System.Threading.Thread.Sleep(200);
                 if (fTargetTemp >= fStopTemp)
                     break;
-                if(((fTargetTemp-fStepTemp*fError)<=fRealtimeTemp)&&(fRealtimeTemp<=(fTargetTemp+fStepTemp*fError)))
+                if (((fTargetTemp - fStepTemp * fError) <= fRealtimeTemp) && (fRealtimeTemp <= (fTargetTemp + fStepTemp * fError)))
                 {
                     listTCfx.Add(fRealtimeTemp);
-                    aRow[0]=fRealtimeTemp;
-                    for (int i=0;i<iNumofLine;i++)
+                    aRow[0] = fRealtimeTemp;
+                    for (int i = 0; i < iNumofLine; i++)
                     {
-                        strFreq = Math.Pow(10,fStartf+fStepf*i).ToString("f4");
+                        strFreq = Math.Pow(10, fStartf + fStepf * i).ToString("f4");
                         CommFreq = "Freq" + " " + strFreq + "Hz";
                         formattedIOLRC.WriteLine(CommFreq);
                         System.Threading.Thread.Sleep(1);
                         FetchResult = sendCommand("Fetch?");
                         listTCfy[i].Add(Convert.ToDouble(FetchResult[0]));
-                        aRow[i+1]=(Convert.ToDouble(FetchResult[0]));
+                        aRow[i + 1] = (Convert.ToDouble(FetchResult[0]));
                     }
                     dgvTCf.Rows.Add(aRow);
                     fTargetTemp += fStepTemp;
-                    labelNextSetpoint.Text = fTargetTemp.ToString();
+                    iCompletion++;
+                    labelCompletion.Text = Convert.ToString(iCompletion);
                 }
-                else if(fRealtimeTemp<fTargetTemp)
+                else if (fRealtimeTemp < fTargetTemp)
                 {
                     //
                 }
-                else if(fRealtimeTemp>fTargetTemp)
+                else if (fRealtimeTemp > fTargetTemp)
                 {
-                    //实时温度大于目标采集点温度：1、修正目标采集点温度 2、Loss数据记录
+                    //Realtime Temp is bigger than Target Temp：1.Correct Target Temp 2. Record Loss Point 3. Loss Index
+                    listLossT.Add(fTargetTemp);
+                    iCorrectionCoefficient = Convert.ToInt32((Math.Ceiling((fRealtimeTemp - fTargetTemp) / fStepTemp)));
+                    fTargetTemp = fTargetTemp + iCorrectionCoefficient * fStepTemp;
+                    iLoss += iCorrectionCoefficient;
+                    labelLoss.Text = Convert.ToString(iLoss);
                 }
             }
         }
 
         private void Test1_Click(object sender, EventArgs e)
         {
-            
+            iNumofLine = 2;
+            List<IList> listy = new List<IList>();
+            List<float> x = new List<float>();
+            List<float> y = new List<float>();
+            List<float> y2 = new List<float>();
+            List<string> tag = new List<string>();
+            listy.Add(y); listy.Add(y2);
+            x.Add(0); x.Add(1); x.Add(2);
+            y.Add(0); y.Add(1); y.Add(2);
+            y2.Add(0); y2.Add(-1); y2.Add(-2);
+            tag.Add("f=1Hz"); tag.Add("f=10Hz");
+            plot_X_multiY(chartTCf, tag, x, listy);
+            MessageBox.Show("Loss:" + Convert.ToString(iLoss), "T-C-f Sweep Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            timerUpTime.Interval = 1000; //Initialize UpTime timer
+            UpTime = new System.DateTime(0); //Initialize UpTime timer
+            timerUpTime.Start(); //UpTime timer Start
             listTCfy = new List<IList>();
             dtTCf = new DataTable();
             dgvTCf.DataSource = dtTCf;
@@ -429,6 +488,8 @@ namespace TCf_Sweep
                 aRow[i+1]=i;
             }
             dtTCf.Rows.Add(aRow);
+            iExpectation = Convert.ToInt32(Math.Ceiling(fStopTemp - fTargetTemp) / fStepTemp + 1);
+            labelExpectation.Text = Convert.ToString(iExpectation);
 
         }
 
