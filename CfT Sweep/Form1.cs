@@ -220,10 +220,12 @@ namespace TCf_Sweep
             }
             return null;
         }
+        private void plot(Chart chart, List<string> tag, List<float> listx, List<IList> listy)
+        {
+        }
 
         private void plot_X_multiY(Chart chart, List<string> tag, List<float> listx, List<IList> listy)
         {
-
             chart.Series.Clear();
             List<Series> series = new List<Series>();
             for (int i = 0; i < iNumofLine; i++)
@@ -238,7 +240,7 @@ namespace TCf_Sweep
                 chart.Series.Add(series[i]);
             }
         }
-
+        public delegate void plot_X_multiYEventHandler(Chart chart, List<string> tag, List<float> listx, List<IList> listy);
         //Initialize LRC Meter and Temp Controller
         private void InitializeInstruments()
         {
@@ -374,6 +376,9 @@ namespace TCf_Sweep
             labelExpectation.Text = Convert.ToString(iExpectation);
             iCompletion = 0;
             labelCompletion.Text = Convert.ToString(iCompletion);
+            progressBarProgress.Maximum = iExpectation;
+            progressBarProgress.Step = 1;
+            progressBarProgress.Value = 0;
             //Run Cf Thread
             if (fTargetTemp>fRealtimeTemp-fStepTemp*fError)
             {
@@ -407,6 +412,7 @@ namespace TCf_Sweep
                     break;
                 }
                 labelNextSetpoint.Text = fTargetTemp.ToString();
+
                 System.Threading.Thread.Sleep(200);
                 if (fTargetTemp >= fStopTemp)
                     break;
@@ -428,6 +434,7 @@ namespace TCf_Sweep
                     fTargetTemp += fStepTemp;
                     iCompletion++;
                     labelCompletion.Text = Convert.ToString(iCompletion);
+                    progressBarProgress.Value += progressBarProgress.Step;
                 }
                 else if (fRealtimeTemp < fTargetTemp)
                 {
@@ -447,6 +454,9 @@ namespace TCf_Sweep
 
         private void Test1_Click(object sender, EventArgs e)
         {
+            progressBarProgress.Maximum = 100;
+            progressBarProgress.Value = 0;
+            progressBarProgress.Step = 1;
             iNumofLine = 2;
             List<IList> listy = new List<IList>();
             List<float> x = new List<float>();
@@ -458,7 +468,6 @@ namespace TCf_Sweep
             y.Add(0); y.Add(1); y.Add(2);
             y2.Add(0); y2.Add(-1); y2.Add(-2);
             tag.Add("f=1Hz"); tag.Add("f=10Hz");
-            plot_X_multiY(chartTCf, tag, x, listy);
             MessageBox.Show("Loss:" + Convert.ToString(iLoss), "T-C-f Sweep Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
             timerUpTime.Interval = 1000; //Initialize UpTime timer
             UpTime = new System.DateTime(0); //Initialize UpTime timer
@@ -497,6 +506,7 @@ namespace TCf_Sweep
         {
             UpTime = UpTime.AddSeconds(1);
             labelUpTime.Text = UpTime.ToString("mm:ss");
+            progressBarProgress.Value += progressBarProgress.Step;
         }
 
         private void btnStop_Click(object sender, EventArgs e)

@@ -86,9 +86,9 @@
             this.labelExpectation = new System.Windows.Forms.Label();
             this.label27 = new System.Windows.Forms.Label();
             this.labelLoss = new System.Windows.Forms.Label();
-            this.label23 = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
             this.progressBarProgress = new System.Windows.Forms.ProgressBar();
+            this.label23 = new System.Windows.Forms.Label();
             this.labelUpTime = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
             this.labelNextSetpoint = new System.Windows.Forms.Label();
@@ -675,16 +675,6 @@
             this.labelLoss.TabIndex = 9;
             this.labelLoss.Text = "0";
             // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.label23.Location = new System.Drawing.Point(518, 29);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(43, 20);
-            this.label23.TabIndex = 8;
-            this.label23.Text = "Loss";
-            // 
             // label22
             // 
             this.label22.AutoSize = true;
@@ -697,10 +687,21 @@
             // 
             // progressBarProgress
             // 
+            this.progressBarProgress.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
             this.progressBarProgress.Location = new System.Drawing.Point(672, 57);
             this.progressBarProgress.Name = "progressBarProgress";
             this.progressBarProgress.Size = new System.Drawing.Size(100, 23);
             this.progressBarProgress.TabIndex = 6;
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.label23.Location = new System.Drawing.Point(518, 29);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(43, 20);
+            this.label23.TabIndex = 8;
+            this.label23.Text = "Loss";
             // 
             // labelUpTime
             // 
