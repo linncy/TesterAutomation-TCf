@@ -41,6 +41,9 @@ namespace TCf_Sweep
         List<float> listTCfx;
         List<IList> listTCfy;
         List<float> listLossT;
+        List<string> tag;
+        List<float> listx;
+        List<IList> listy;
         DataTable dtTCf = new DataTable();
         System.Threading.ThreadStart TempMonitorThreadStart;
         System.Threading.Thread TempMonitorThread;
@@ -49,6 +52,9 @@ namespace TCf_Sweep
         System.Threading.ThreadStart plotThreadStart;
         System.Threading.Thread plotThread;
         System.DateTime UpTime = new System.DateTime(0);
+        bool signal=true;
+
+        Random rd = new Random();
 
         public enum RunState
         {
@@ -220,27 +226,48 @@ namespace TCf_Sweep
             }
             return null;
         }
-        private void plot(Chart chart, List<string> tag, List<float> listx, List<IList> listy)
-        {
-        }
+        private delegate void Plot(List<string> tag, List<float> listx, List<IList> listy);
 
-        private void plot_X_multiY(Chart chart, List<string> tag, List<float> listx, List<IList> listy)
+        private void plot_X_multiY(List<string> tag, List<float> listx, List<IList> listy)
         {
-            chart.Series.Clear();
-            List<Series> series = new List<Series>();
-            for (int i = 0; i < iNumofLine; i++)
+            if(this.InvokeRequired)
             {
-                Series tempSeries = new Series(tag[i]);
-                tempSeries.ChartType = SeriesChartType.Spline;
-                tempSeries.Points.DataBindXY(listx, listy[i]);
-                series.Add(tempSeries);
+                Plot plot = new Plot(plot_X_multiY);
+                this.Invoke(plot, new object[] {tag, listx, listy });
             }
-            for (int i = 0; i < iNumofLine; i++)
+            else
             {
-                chart.Series.Add(series[i]);
+                List<float> tempListX = new List<float>();
+                tempListX = listx;
+                List<IList> tempListY = new List<IList>();
+                tempListY= listy; 
+                this.chartTCf.Series.Clear();
+                List<Series> series = new List<Series>();
+                for (int i = 0; i < iNumofLine; i++)
+                {
+                    Series tempSeries = new Series(tag[i]);
+                    tempSeries.ChartType = SeriesChartType.Spline;
+                    tempSeries.Points.DataBindXY(tempListX, tempListY[i]);
+                    series.Add(tempSeries);
+                }
+                for (int i = 0; i < iNumofLine; i++)
+                {
+                    this.chartTCf.Series.Add(series[i]);
+                }
             }
         }
-        public delegate void plot_X_multiYEventHandler(Chart chart, List<string> tag, List<float> listx, List<IList> listy);
+        private void ploter()
+        {
+            while(true)
+            {
+                System.Threading.Thread.Sleep(1000);
+                if(signal==true)
+                {
+                    plot_X_multiY(tag, listx, listy);
+                }
+
+            }
+        }
         //Initialize LRC Meter and Temp Controller
         private void InitializeInstruments()
         {
@@ -451,55 +478,77 @@ namespace TCf_Sweep
                 }
             }
         }
+        private delegate void labelchange(string str);
+        private void lab(string str)
+        {
+            if(this.InvokeRequired)
+            {
+                labelchange ll = new labelchange(lab);
+                this.Invoke(ll, new object[] { str });
+            }
+            else
+            {
+                this.labelUpTime.Text = str;
+            }
+        }
+    
+        private void threadtest()
+        {
+            while(true)
+            {
+                for(int k = 3; k <= 10000; k++)
+                {
+                    System.Threading.Thread.Sleep(250);
+                    signal = false;
+                    listx.Add(k+1);
+                    listy[0].Add(Convert.ToSingle(rd.Next()));
+                    listy[1].Add(Convert.ToSingle(-rd.Next()));
+                    listy[2].Add(Convert.ToSingle(-rd.Next() + 1));
+                    listy[3].Add(Convert.ToSingle(-rd.Next()*0.8));
+                    listy[4].Add(Convert.ToSingle(-rd.Next() * 0.2 + 1));
+                    listy[5].Add(Convert.ToSingle(-rd.Next() - 1));
+                    listy[6].Add(Convert.ToSingle(-rd.Next() * 0.034 + 2));
+                    signal = true;
+                }
+            }
+        }
 
         private void Test1_Click(object sender, EventArgs e)
         {
-            progressBarProgress.Maximum = 100;
-            progressBarProgress.Value = 0;
-            progressBarProgress.Step = 1;
-            iNumofLine = 2;
-            List<IList> listy = new List<IList>();
-            List<float> x = new List<float>();
-            List<float> y = new List<float>();
-            List<float> y2 = new List<float>();
-            List<string> tag = new List<string>();
-            listy.Add(y); listy.Add(y2);
-            x.Add(0); x.Add(1); x.Add(2);
-            y.Add(0); y.Add(1); y.Add(2);
-            y2.Add(0); y2.Add(-1); y2.Add(-2);
-            tag.Add("f=1Hz"); tag.Add("f=10Hz");
-            MessageBox.Show("Loss:" + Convert.ToString(iLoss), "T-C-f Sweep Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
             timerUpTime.Interval = 1000; //Initialize UpTime timer
             UpTime = new System.DateTime(0); //Initialize UpTime timer
             timerUpTime.Start(); //UpTime timer Start
-            listTCfy = new List<IList>();
-            dtTCf = new DataTable();
-            dgvTCf.DataSource = dtTCf;
-            fTargetTemp = Convert.ToSingle(txtStartTemp.Text);
-            fStepTemp = Convert.ToSingle(txtStepTemp.Text);
-            fStopTemp = Convert.ToSingle(txtStopTemp.Text);
-            fStartf = Convert.ToSingle(txtStartFreq.Text);
-            fStopf = Convert.ToSingle(txtStopFreq.Text);
-            fStepf = Convert.ToSingle(txtStepFreq.Text);
-            iNumofLine = Convert.ToInt32((fStopf - fStartf) / fStepf) + 1;
-            dtTCf.Columns.Add("T(K)", typeof(float));
-            for (int i = 0; i < iNumofLine; i++)
+            progressBarProgress.Maximum = 10000;
+            progressBarProgress.Value = 0;
+            progressBarProgress.Step = 1;
+            iNumofLine = 7;
+            listy = new List<IList>();
+            listx = new List<float>();
+            List<float> y = new List<float>();
+            List<float> y2 = new List<float>();
+            tag = new List<string>();
+            listx.Add(0); listx.Add(1); listx.Add(2);
+            for (int m=0;m<iNumofLine;m++)
             {
-                List<double> listchild = new List<double>();
-                listTCfy.Add(listchild);
-                dtTCf.Columns.Add("f=10^" + Convert.ToString(fStartf + fStepf * i) + " Hz", typeof(float));
+                y = new List<float>();
+                y.Add(0); y.Add(1); y.Add(2);
+                listy.Add(y);
             }
-            MessageBox.Show(Convert.ToString(iNumofLine), "Error: Parameter Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            DataRow aRow = dtTCf.NewRow();
-            aRow[0]=10.116F;
-            for (int i = 0; i < iNumofLine; i++)
-            {
-                aRow[i+1]=i;
-            }
-            dtTCf.Rows.Add(aRow);
-            iExpectation = Convert.ToInt32(Math.Ceiling(fStopTemp - fTargetTemp) / fStepTemp + 1);
-            labelExpectation.Text = Convert.ToString(iExpectation);
-
+            tag.Add("f=1Hz"); tag.Add("f=2Hz"); tag.Add("f=3Hz"); tag.Add("f=4Hz"); tag.Add("f=5Hz"); tag.Add("f=6Hz"); tag.Add("f=7Hz");
+            plotThreadStart = new System.Threading.ThreadStart(ploter);
+            plotThread = new System.Threading.Thread(plotThreadStart);
+            plotThread.IsBackground = true;
+            plotThread.Start();
+            System.Threading.Thread threadtestthread = new System.Threading.Thread(new System.Threading.ThreadStart(threadtest));
+            threadtestthread.IsBackground = true;
+            threadtestthread.Start();
+            //for (int j=0;j<=10000;j++)
+            //{
+               // listx.Add(j);
+              //  listy[0].Add(Convert.ToSingle(j));
+              //  listy[1].Add(Convert.ToSingle(-j));
+           // }
+            //plot_X_multiY( tag, listx, listy);
         }
 
         private void timerUpTime_Tick(object sender, EventArgs e)
