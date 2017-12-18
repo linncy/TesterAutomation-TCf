@@ -53,6 +53,7 @@ namespace TCf_Sweep
         System.Threading.Thread plotThread;
         System.DateTime UpTime = new System.DateTime(0);
         bool signal=true;
+        static object locker = new object();
 
         Random rd = new Random();
 
@@ -260,12 +261,14 @@ namespace TCf_Sweep
         {
             while(true)
             {
-                System.Threading.Thread.Sleep(1000);
-                if(signal==true)
+                System.Threading.Thread.Sleep(1000);// refresh graph per second
+                lock (locker)
                 {
-                    plot_X_multiY(tag, listx, listy);
+                    if (signal == true)
+                    {
+                        plot_X_multiY(tag, listx, listy);
+                    }
                 }
-
             }
         }
         //Initialize LRC Meter and Temp Controller
@@ -373,6 +376,8 @@ namespace TCf_Sweep
             timerUpTime.Interval = 1000; //Initialize UpTime timer
             UpTime = new System.DateTime(0); //Initialize UpTime timer
             timerUpTime.Start(); //UpTime timer Start
+            timerRefresh.Interval = 500;//Initialize Refresh timer
+            timerRefresh.Start(); // Refresh timer start
             dtTCf = new DataTable();
             dgvTCf.DataSource = dtTCf;
             listTCfy = new List<IList>();
@@ -393,10 +398,14 @@ namespace TCf_Sweep
             fStepf = Convert.ToSingle(txtStepFreq.Text);
             iNumofLine = Convert.ToInt32((fStopf - fStartf) / fStepf) + 1;
             dtTCf.Columns.Add("T(K)", typeof(float));
+            listy = new List<IList>();
+            listx = new List<float>();
+            tag = new List<string>();
             for (i=0;i<iNumofLine;i++)
             {
-                List<double> listchild=new List<double>();
-                listTCfy.Add(listchild);
+                List<float> listchild=new List<float>();
+                listy.Add(listchild);
+                tag.Add("f=10^" + Convert.ToString(fStartf + fStepf * i) + " Hz");
                 dtTCf.Columns.Add("f=10^"+Convert.ToString(fStartf+fStepf*i)+" Hz", typeof(float));
             }
             iExpectation = Convert.ToInt32(Math.Ceiling(fStopTemp - fTargetTemp) / fStepTemp + 1);
@@ -409,10 +418,16 @@ namespace TCf_Sweep
             //Run Cf Thread
             if (fTargetTemp>fRealtimeTemp-fStepTemp*fError)
             {
+                //Cf Thread
                 CfThreadStart = new System.Threading.ThreadStart(RunCf);
                 CfThread = new System.Threading.Thread(CfThreadStart);
                 CfThread.IsBackground = true;
                 CfThread.Start();
+                //Plot Thread
+                plotThreadStart = new System.Threading.ThreadStart(ploter);
+                plotThread = new System.Threading.Thread(plotThreadStart);
+                plotThread.IsBackground = true;
+                plotThread.Start();
             }
             else
             {
@@ -445,17 +460,20 @@ namespace TCf_Sweep
                     break;
                 if (((fTargetTemp - fStepTemp * fError) <= fRealtimeTemp) && (fRealtimeTemp <= (fTargetTemp + fStepTemp * fError)))
                 {
-                    listTCfx.Add(fRealtimeTemp);
+                    listx.Add(fRealtimeTemp);
                     aRow[0] = fRealtimeTemp;
-                    for (int i = 0; i < iNumofLine; i++)
+                    lock (locker)
                     {
-                        strFreq = Math.Pow(10, fStartf + fStepf * i).ToString("f4");
-                        CommFreq = "Freq" + " " + strFreq + "Hz";
-                        formattedIOLRC.WriteLine(CommFreq);
-                        System.Threading.Thread.Sleep(1);
-                        FetchResult = sendCommand("Fetch?");
-                        listTCfy[i].Add(Convert.ToDouble(FetchResult[0]));
-                        aRow[i + 1] = (Convert.ToDouble(FetchResult[0]));
+                        for (int i = 0; i < iNumofLine; i++)
+                        {
+                            strFreq = Math.Pow(10, fStartf + fStepf * i).ToString("f4");
+                            CommFreq = "Freq" + " " + strFreq + "Hz";
+                            formattedIOLRC.WriteLine(CommFreq);
+                            System.Threading.Thread.Sleep(1);
+                            FetchResult = sendCommand("Fetch?");
+                            listy[i].Add(Convert.ToSingle(Convert.ToDouble(FetchResult[0])));
+                            aRow[i + 1] = (Convert.ToDouble(FetchResult[0]));
+                        }
                     }
                     dgvTCf.Rows.Add(aRow);
                     fTargetTemp += fStepTemp;
@@ -498,26 +516,36 @@ namespace TCf_Sweep
             {
                 for(int k = 3; k <= 10000; k++)
                 {
-                    System.Threading.Thread.Sleep(250);
-                    signal = false;
-                    listx.Add(k+1);
-                    listy[0].Add(Convert.ToSingle(rd.Next()));
-                    listy[1].Add(Convert.ToSingle(-rd.Next()));
-                    listy[2].Add(Convert.ToSingle(-rd.Next() + 1));
-                    listy[3].Add(Convert.ToSingle(-rd.Next()*0.8));
-                    listy[4].Add(Convert.ToSingle(-rd.Next() * 0.2 + 1));
-                    listy[5].Add(Convert.ToSingle(-rd.Next() - 1));
-                    listy[6].Add(Convert.ToSingle(-rd.Next() * 0.034 + 2));
-                    signal = true;
+                    lock(locker)
+                    {
+                        System.Threading.Thread.Sleep(250);
+                        signal = false;
+                        listx.Add(k + 1);
+                        listy[0].Add(Convert.ToSingle(rd.Next()));
+                        listy[1].Add(Convert.ToSingle(-rd.Next()));
+                        listy[2].Add(Convert.ToSingle(-rd.Next() + 1));
+                        listy[3].Add(Convert.ToSingle(-rd.Next() * 0.8));
+                        listy[4].Add(Convert.ToSingle(-rd.Next() * 0.2 + 1));
+                        listy[5].Add(Convert.ToSingle(-rd.Next() - 1));
+                        listy[6].Add(Convert.ToSingle(-rd.Next() * 0.034 + 2));
+                        signal = true;
+                    }
                 }
             }
         }
 
         private void Test1_Click(object sender, EventArgs e)
         {
+            dtTCf = new DataTable();
+            dgvTCf.DataSource = dtTCf;
+            fStartf = Convert.ToSingle(txtStartFreq.Text);
+            fStopf = Convert.ToSingle(txtStopFreq.Text);
+            fStepf = Convert.ToSingle(txtStepFreq.Text);
             timerUpTime.Interval = 1000; //Initialize UpTime timer
             UpTime = new System.DateTime(0); //Initialize UpTime timer
             timerUpTime.Start(); //UpTime timer Start
+            timerRefresh.Interval = 500; 
+            timerRefresh.Start(); 
             progressBarProgress.Maximum = 10000;
             progressBarProgress.Value = 0;
             progressBarProgress.Step = 1;
@@ -527,14 +555,13 @@ namespace TCf_Sweep
             List<float> y = new List<float>();
             List<float> y2 = new List<float>();
             tag = new List<string>();
-            listx.Add(0); listx.Add(1); listx.Add(2);
-            for (int m=0;m<iNumofLine;m++)
+            for (i = 0; i < iNumofLine; i++)
             {
-                y = new List<float>();
-                y.Add(0); y.Add(1); y.Add(2);
-                listy.Add(y);
+                List<float> listchild = new List<float>();
+                listy.Add(listchild);
+                tag.Add("f=10^" + Convert.ToString(fStartf + fStepf * i) + " Hz");
+                dtTCf.Columns.Add("f=10^" + Convert.ToString(fStartf + fStepf * i) + " Hz", typeof(float));
             }
-            tag.Add("f=1Hz"); tag.Add("f=2Hz"); tag.Add("f=3Hz"); tag.Add("f=4Hz"); tag.Add("f=5Hz"); tag.Add("f=6Hz"); tag.Add("f=7Hz");
             plotThreadStart = new System.Threading.ThreadStart(ploter);
             plotThread = new System.Threading.Thread(plotThreadStart);
             plotThread.IsBackground = true;
@@ -542,12 +569,13 @@ namespace TCf_Sweep
             System.Threading.Thread threadtestthread = new System.Threading.Thread(new System.Threading.ThreadStart(threadtest));
             threadtestthread.IsBackground = true;
             threadtestthread.Start();
+            dtTCf.Rows.Add(1.0F, 2.0F, 2.0F, 2.0F, 2.0F, 2.0F, 2.0F);
             //for (int j=0;j<=10000;j++)
             //{
-               // listx.Add(j);
-              //  listy[0].Add(Convert.ToSingle(j));
-              //  listy[1].Add(Convert.ToSingle(-j));
-           // }
+            // listx.Add(j);
+            //  listy[0].Add(Convert.ToSingle(j));
+            //  listy[1].Add(Convert.ToSingle(-j));
+            // }
             //plot_X_multiY( tag, listx, listy);
         }
 
@@ -555,7 +583,6 @@ namespace TCf_Sweep
         {
             UpTime = UpTime.AddSeconds(1);
             labelUpTime.Text = UpTime.ToString("mm:ss");
-            progressBarProgress.Value += progressBarProgress.Step;
         }
 
         private void btnStop_Click(object sender, EventArgs e)
@@ -567,6 +594,31 @@ namespace TCf_Sweep
         private void btnSave_Click(object sender, EventArgs e)
         {
             DataGridViewToCSV(dgvTCf);
+        }
+
+        private void writer()
+        {
+            while(true)
+            {
+                System.Threading.Thread.Sleep(1000);
+                dtTCf.Rows.Add(1.0F, 2.0F, 2.0F, 2.0F, 2.0F, 2.0F, 2.0F);        
+            }
+        }
+
+        private void test2_Click(object sender, EventArgs e)
+        {
+            System.Threading.ThreadStart writeThreadStart;
+            System.Threading.Thread writeThread;
+            writeThreadStart = new System.Threading.ThreadStart(writer);
+            writeThread = new System.Threading.Thread(writeThreadStart);
+            writeThread.IsBackground = true;
+            writeThread.Start();
+        }
+
+        private void timerRefresh_Tick(object sender, EventArgs e)//Refresh progressbar and datagridview
+        {
+            progressBarProgress.Value += progressBarProgress.Step;
+            dgvTCf.Refresh();
         }
     }
 }

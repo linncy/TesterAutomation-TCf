@@ -102,6 +102,8 @@
             this.labelVersion = new System.Windows.Forms.Label();
             this.Test1 = new System.Windows.Forms.Button();
             this.timerUpTime = new System.Windows.Forms.Timer(this.components);
+            this.test2 = new System.Windows.Forms.Button();
+            this.timerRefresh = new System.Windows.Forms.Timer(this.components);
             this.groupBoxStatus.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureState)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureConn)).BeginInit();
@@ -831,11 +833,26 @@
             // 
             this.timerUpTime.Tick += new System.EventHandler(this.timerUpTime_Tick);
             // 
+            // test2
+            // 
+            this.test2.Location = new System.Drawing.Point(888, 645);
+            this.test2.Name = "test2";
+            this.test2.Size = new System.Drawing.Size(75, 23);
+            this.test2.TabIndex = 13;
+            this.test2.Text = "Test2";
+            this.test2.UseVisualStyleBackColor = true;
+            this.test2.Click += new System.EventHandler(this.test2_Click);
+            // 
+            // timerRefresh
+            // 
+            this.timerRefresh.Tick += new System.EventHandler(this.timerRefresh_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(971, 781);
+            this.Controls.Add(this.test2);
             this.Controls.Add(this.Test1);
             this.Controls.Add(this.labelVersion);
             this.Controls.Add(this.btnClear);
@@ -939,6 +956,8 @@
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.Label labelCompletion;
         private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.Button test2;
+        private System.Windows.Forms.Timer timerRefresh;
     }
 }
 
