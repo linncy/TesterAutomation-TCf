@@ -34,7 +34,7 @@ namespace TCf_Sweep
         float fTargetTemp;
         float fStepTemp;
         float fStopTemp;
-        float fError;
+        float fError=0.1F;
         float fStartf;
         float fStopf;
         float fStepf;
@@ -359,7 +359,7 @@ namespace TCf_Sweep
 
         private void labelVersion_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("T-C-f Sweep \nDeveloped for Agilent 4284A Precision LCR Meter\nDeveloped for Cryo-con Model 22C\nVersion Origin0.1\nBuilt on 11/27/2017", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("T-C-f Sweep \nDeveloped for Agilent 4284A Precision LCR Meter\nDeveloped for Cryo-con Model 22C\nVersion Origin0.1\nBuilt on 2/2/2018", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
         }
 
@@ -412,7 +412,7 @@ namespace TCf_Sweep
             labelExpectation.Text = Convert.ToString(iExpectation);
             iCompletion = 0;
             labelCompletion.Text = Convert.ToString(iCompletion);
-            progressBarProgress.Maximum = iExpectation;
+            progressBarProgress.Maximum = iExpectation+1;
             progressBarProgress.Step = 1;
             progressBarProgress.Value = 0;
             //Run Cf Thread
@@ -479,7 +479,7 @@ namespace TCf_Sweep
                     fTargetTemp += fStepTemp;
                     iCompletion++;
                     labelCompletion.Text = Convert.ToString(iCompletion);
-                    progressBarProgress.Value += progressBarProgress.Step;
+                    //progressBarProgress.Value += progressBarProgress.Step; //2018-2-2 8:12:08 Temporarily disable Progressbar (to be fixed)
                 }
                 else if (fRealtimeTemp < fTargetTemp)
                 {
@@ -521,7 +521,7 @@ namespace TCf_Sweep
                         System.Threading.Thread.Sleep(250);
                         signal = false;
                         listx.Add(k + 1);
-                        listy[0].Add(Convert.ToSingle(rd.Next()));
+                        listy[0].Add(Convert.ToSingle(rd.Next())*fError);
                         listy[1].Add(Convert.ToSingle(-rd.Next()));
                         listy[2].Add(Convert.ToSingle(-rd.Next() + 1));
                         listy[3].Add(Convert.ToSingle(-rd.Next() * 0.8));
