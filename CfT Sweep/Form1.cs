@@ -19,6 +19,7 @@ namespace TCf_Sweep
         string Func = "CpGpRp";
         bool GPIBstatus = false;
         bool PauseIsTrue = false;
+        bool tempRun = false;
         string[] Cp_Unit = { "F", "mF", "μF", "nF", "pF" };
         string[] Gp_Unit = { "S", "mS", "μS", "nS", "pS" };
         string[] Rp_Unit = { "Ω", "kΩ", "MΩ" };
@@ -72,7 +73,7 @@ namespace TCf_Sweep
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            System.Windows.Forms.Control.CheckForIllegalCrossThreadCalls = false;
         }
 
         // GPIB instruments on the GPIB0 interface
@@ -123,6 +124,25 @@ namespace TCf_Sweep
             return result;
         }
 
+        private void changeWidget()
+        {
+            bool state;
+            state = txtStartTemp.Enabled;
+            txtStartTemp.Enabled=!state;
+            txtStopTemp.Enabled = !state;
+            txtStepTemp.Enabled = !state;
+            txtStartFreq.Enabled = !state;
+            txtStopFreq.Enabled = !state;
+            txtStepFreq.Enabled = !state;
+            txtMeasVoltage.Enabled = !state;
+            txtOscVoltage.Enabled = !state;
+            groupBox4.Enabled = !state;
+            groupBox5.Enabled = !state;
+            btnCalculate.Enabled = !state;
+            btnStart.Enabled = !state;
+            btnStop.Enabled = state;
+            txtAveRate.Enabled = !state;
+        }
         private string[] sendCommand(string comm,float value=1000)
         {
             string Comm;
@@ -234,14 +254,17 @@ namespace TCf_Sweep
             if(this.InvokeRequired)
             {
                 Plot plot = new Plot(plot_X_multiY);
-                this.Invoke(plot, new object[] {tag, listx, listy });
+                if (listx.Count == listy[listy.Count - 1].Count)
+                {
+                    this.Invoke(plot, new object[] {tag, listx, listy });
+                }
             }
             else
             {
                 List<float> tempListX = new List<float>();
                 tempListX = listx;
                 List<IList> tempListY = new List<IList>();
-                tempListY= listy; 
+                tempListY = listy;
                 this.chartTCf.Series.Clear();
                 List<Series> series = new List<Series>();
                 for (int i = 0; i < iNumofLine; i++)
@@ -255,6 +278,7 @@ namespace TCf_Sweep
                 {
                     this.chartTCf.Series.Add(series[i]);
                 }
+
             }
         }
         private void ploter()
@@ -327,15 +351,15 @@ namespace TCf_Sweep
 
         private void TempMonitor()
         {
-            string idnResponse;
-            while (true)
-            {
-                System.Threading.Thread.Sleep(500);
-                formattedIOTEMPCON.WriteLine("input? a");
-                idnResponse = formattedIOTEMPCON.ReadLine().Replace("\n", "");
-                labelRealTimeTemperature.Text = idnResponse;
-                fRealtimeTemp = Convert.ToSingle(idnResponse);
-            }
+            //string idnResponse;
+            //while (tempRun)
+            //{
+            //    System.Threading.Thread.Sleep(500);
+            //    formattedIOTEMPCON.WriteLine("input? a");
+            //    idnResponse = formattedIOTEMPCON.ReadLine().Replace("\n", "");
+            //    labelRealTimeTemperature.Text = idnResponse;
+            //    fRealtimeTemp = Convert.ToSingle(idnResponse);
+            //}
         }
 
         private void buttonConn_Click(object sender, EventArgs e)
@@ -435,12 +459,12 @@ namespace TCf_Sweep
                 state = RunState.stop;
                 TempMonitorThread.Abort();
             }
-
+            changeWidget();
         }
         public delegate void RunCfEventHandler();
         public void RunCf()
         {
-            string CommFreq;
+            string CommFreq, idnResponse;
             string strFreq;
             string[] FetchResult;
             DataRow aRow = dtTCf.NewRow();
@@ -458,42 +482,55 @@ namespace TCf_Sweep
                 System.Threading.Thread.Sleep(200);
                 if (fTargetTemp >= fStopTemp)
                     break;
-                if (((fTargetTemp - fStepTemp * fError) <= fRealtimeTemp) && (fRealtimeTemp <= (fTargetTemp + fStepTemp * fError)))
-                {
+                //if (((fTargetTemp - fStepTemp * fError) <= fRealtimeTemp) && (fRealtimeTemp <= (fTargetTemp + fStepTemp * fError)))
+                //{
+
+                //lock (locker)
+                //{
+                    formattedIOTEMPCON.WriteLine("input? a");
+                    idnResponse = formattedIOTEMPCON.ReadLine().Replace("\n", "");
+                    labelRealTimeTemperature.Text = idnResponse;
+                    fRealtimeTemp = Convert.ToSingle(idnResponse);
                     listx.Add(fRealtimeTemp);
-                    aRow[0] = fRealtimeTemp;
-                    lock (locker)
-                    {
-                        for (int i = 0; i < iNumofLine; i++)
+                    for (int i = 0; i < iNumofLine; i++)
                         {
                             strFreq = Math.Pow(10, fStartf + fStepf * i).ToString("f4");
                             CommFreq = "Freq" + " " + strFreq + "Hz";
                             formattedIOLRC.WriteLine(CommFreq);
-                            System.Threading.Thread.Sleep(1);
+                            System.Threading.Thread.Sleep(100);
                             FetchResult = sendCommand("Fetch?");
                             listy[i].Add(Convert.ToSingle(Convert.ToDouble(FetchResult[0])));
                             aRow[i + 1] = (Convert.ToDouble(FetchResult[0]));
+                            if (i==Math.Floor(iNumofLine/2.0))
+                            {
+                                formattedIOTEMPCON.WriteLine("input? a");
+                                idnResponse = formattedIOTEMPCON.ReadLine().Replace("\n", "");
+                                labelRealTimeTemperature.Text = idnResponse;
+                                fRealtimeTemp = Convert.ToSingle(idnResponse);
+                                listx[listx.Count-1]= fRealtimeTemp;
+                                aRow[0] = fRealtimeTemp;
+                            }
                         }
-                    }
-                    dgvTCf.Rows.Add(aRow);
-                    fTargetTemp += fStepTemp;
+                //}
+                ((DataTable)dgvTCf.DataSource).Rows.Add(aRow.ItemArray);
+                fTargetTemp += fStepTemp;
                     iCompletion++;
                     labelCompletion.Text = Convert.ToString(iCompletion);
                     //progressBarProgress.Value += progressBarProgress.Step; //2018-2-2 8:12:08 Temporarily disable Progressbar (to be fixed)
-                }
-                else if (fRealtimeTemp < fTargetTemp)
-                {
-                    //
-                }
-                else if (fRealtimeTemp > fTargetTemp)
-                {
-                    //Realtime Temp is bigger than Target Temp：1.Correct Target Temp 2. Record Loss Point 3. Loss Index
-                    listLossT.Add(fTargetTemp);
-                    iCorrectionCoefficient = Convert.ToInt32((Math.Ceiling((fRealtimeTemp - fTargetTemp) / fStepTemp)));
-                    fTargetTemp = fTargetTemp + iCorrectionCoefficient * fStepTemp;
-                    iLoss += iCorrectionCoefficient;
-                    labelLoss.Text = Convert.ToString(iLoss);
-                }
+                //}
+                //else if (fRealtimeTemp < fTargetTemp)
+                //{
+                //    //
+                //}
+                //else if (fRealtimeTemp > fTargetTemp)
+                //{
+                //    //Realtime Temp is bigger than Target Temp：1.Correct Target Temp 2. Record Loss Point 3. Loss Index
+                //    listLossT.Add(fTargetTemp);
+                //    iCorrectionCoefficient = Convert.ToInt32((Math.Ceiling((fRealtimeTemp - fTargetTemp) / fStepTemp)));
+                //    fTargetTemp = fTargetTemp + iCorrectionCoefficient * fStepTemp;
+                //    iLoss += iCorrectionCoefficient;
+                //    labelLoss.Text = Convert.ToString(iLoss);
+                //}
             }
         }
         private delegate void labelchange(string str);
@@ -589,6 +626,8 @@ namespace TCf_Sweep
         {
             TempMonitorThread.Abort();
             CfThread.Abort();
+            changeWidget();
+            timerUpTime.Enabled = false;
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -617,6 +656,7 @@ namespace TCf_Sweep
 
         private void timerRefresh_Tick(object sender, EventArgs e)//Refresh progressbar and datagridview
         {
+            timerRefresh.Enabled = false;
             progressBarProgress.Value += progressBarProgress.Step;
             dgvTCf.Refresh();
         }
