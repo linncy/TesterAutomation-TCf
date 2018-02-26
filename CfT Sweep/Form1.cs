@@ -10,6 +10,7 @@ using Ivi.Visa;
 using Ivi.Visa.FormattedIO;
 using System.Collections;
 using System.Windows.Forms.DataVisualization.Charting;
+using LogRecord;
 
 namespace TCf_Sweep
 {
@@ -55,6 +56,7 @@ namespace TCf_Sweep
         System.DateTime UpTime = new System.DateTime(0);
         bool signal=true;
         static object locker = new object();
+        LogClass logfile = new LogClass();
 
         Random rd = new Random();
 
@@ -389,7 +391,7 @@ namespace TCf_Sweep
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            string Comm;
+            string Comm, saveData;
             if (!GPIBstatus)
             {
                 MessageBox.Show("Please Connect Instrument.", "No GPIB Connection", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -421,7 +423,7 @@ namespace TCf_Sweep
             fStopf = Convert.ToSingle(txtStopFreq.Text);
             fStepf = Convert.ToSingle(txtStepFreq.Text);
             iNumofLine = Convert.ToInt32((fStopf - fStartf) / fStepf) + 1;
-            dtTCf.Columns.Add("T(K)", typeof(float));
+            //dtTCf.Columns.Add("T(K)", typeof(float));
             listy = new List<IList>();
             listx = new List<float>();
             tag = new List<string>();
@@ -430,7 +432,7 @@ namespace TCf_Sweep
                 List<float> listchild=new List<float>();
                 listy.Add(listchild);
                 tag.Add("f=10^" + Convert.ToString(fStartf + fStepf * i) + " Hz");
-                dtTCf.Columns.Add("f=10^"+Convert.ToString(fStartf+fStepf*i)+" Hz", typeof(float));
+                //dtTCf.Columns.Add("f=10^"+Convert.ToString(fStartf+fStepf*i)+" Hz", typeof(float));
             }
             iExpectation = Convert.ToInt32(Math.Ceiling(fStopTemp - fTargetTemp) / fStepTemp + 1);
             labelExpectation.Text = Convert.ToString(iExpectation);
@@ -459,26 +461,33 @@ namespace TCf_Sweep
                 state = RunState.stop;
                 TempMonitorThread.Abort();
             }
+            logfile.CreateFile("");
+            saveData = "T(K)";
+            for (int i = 0; i < tag.Count; i++)
+            {
+                saveData += "," + tag[i];
+            }
+            logfile.WriteLogFile(saveData);
             changeWidget();
         }
         public delegate void RunCfEventHandler();
         public void RunCf()
         {
-            string CommFreq, idnResponse;
+            string CommFreq, idnResponse, saveData;
             string strFreq;
             string[] FetchResult;
-            DataRow aRow = dtTCf.NewRow();
+            //DataRow aRow = dtTCf.NewRow();
             int iCorrectionCoefficient = 0;
             while (true)
             {
-                if (fTargetTemp > fStopTemp)//Complete
-                {
-                    TempMonitorThread.Abort();
-                    MessageBox.Show("Loss:" + Convert.ToString(iLoss), "T-C-f Sweep Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    break;
-                }
-                labelNextSetpoint.Text = fTargetTemp.ToString();
-
+                //if (fTargetTemp > fStopTemp)//Complete
+                //{
+                //    TempMonitorThread.Abort();
+                //    MessageBox.Show("Loss:" + Convert.ToString(iLoss), "T-C-f Sweep Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                //    break;
+                //}
+                //labelNextSetpoint.Text = fTargetTemp.ToString();
+                saveData = ",";
                 System.Threading.Thread.Sleep(200);
                 if (fTargetTemp >= fStopTemp)
                     break;
@@ -487,35 +496,39 @@ namespace TCf_Sweep
 
                 //lock (locker)
                 //{
-                    formattedIOTEMPCON.WriteLine("input? a");
-                    idnResponse = formattedIOTEMPCON.ReadLine().Replace("\n", "");
-                    labelRealTimeTemperature.Text = idnResponse;
-                    fRealtimeTemp = Convert.ToSingle(idnResponse);
-                    listx.Add(fRealtimeTemp);
-                    for (int i = 0; i < iNumofLine; i++)
-                        {
-                            strFreq = Math.Pow(10, fStartf + fStepf * i).ToString("f4");
-                            CommFreq = "Freq" + " " + strFreq + "Hz";
-                            formattedIOLRC.WriteLine(CommFreq);
-                            System.Threading.Thread.Sleep(100);
-                            FetchResult = sendCommand("Fetch?");
-                            listy[i].Add(Convert.ToSingle(Convert.ToDouble(FetchResult[0])));
-                            aRow[i + 1] = (Convert.ToDouble(FetchResult[0]));
-                            if (i==Math.Floor(iNumofLine/2.0))
-                            {
-                                formattedIOTEMPCON.WriteLine("input? a");
-                                idnResponse = formattedIOTEMPCON.ReadLine().Replace("\n", "");
-                                labelRealTimeTemperature.Text = idnResponse;
-                                fRealtimeTemp = Convert.ToSingle(idnResponse);
-                                listx[listx.Count-1]= fRealtimeTemp;
-                                aRow[0] = fRealtimeTemp;
-                            }
-                        }
+                formattedIOTEMPCON.WriteLine("input? a");
+                idnResponse = formattedIOTEMPCON.ReadLine().Replace("\n", "");
+                labelRealTimeTemperature.Text = idnResponse;
+                fRealtimeTemp = Convert.ToSingle(idnResponse);
+                listx.Add(fRealtimeTemp);
+                for (int i = 0; i < iNumofLine; i++)
+                {
+                    strFreq = Math.Pow(10, fStartf + fStepf * i).ToString("f4");
+                    CommFreq = "Freq" + " " + strFreq + "Hz";
+                    formattedIOLRC.WriteLine(CommFreq);
+                    System.Threading.Thread.Sleep(100);
+                    FetchResult = sendCommand("Fetch?");
+                    listy[i].Add(Convert.ToSingle(Convert.ToDouble(FetchResult[0])));
+                    //aRow[i + 1] = (Convert.ToDouble(FetchResult[0]));
+                    if (i==Math.Floor(iNumofLine/2.0))
+                    {
+                        formattedIOTEMPCON.WriteLine("input? a");
+                        idnResponse = formattedIOTEMPCON.ReadLine().Replace("\n", "");
+                        labelRealTimeTemperature.Text = idnResponse;
+                        fRealtimeTemp = Convert.ToSingle(idnResponse);
+                        listx[listx.Count-1]= fRealtimeTemp;
+                        saveData = idnResponse + saveData;
+                        //aRow[0] = fRealtimeTemp;
+                    }
+                    saveData += FetchResult[0] + ",";
+                }
                 //}
-                ((DataTable)dgvTCf.DataSource).Rows.Add(aRow.ItemArray);
+                //((DataTable)dgvTCf.DataSource).Rows.Add(aRow.ItemArray);
                 fTargetTemp += fStepTemp;
-                    iCompletion++;
-                    labelCompletion.Text = Convert.ToString(iCompletion);
+                iCompletion++;
+                labelCompletion.Text = Convert.ToString(iCompletion);
+                saveData = saveData.Substring(0, saveData.Length - 1);
+                logfile.WriteLogFile(saveData);
                     //progressBarProgress.Value += progressBarProgress.Step; //2018-2-2 8:12:08 Temporarily disable Progressbar (to be fixed)
                 //}
                 //else if (fRealtimeTemp < fTargetTemp)
@@ -597,16 +610,17 @@ namespace TCf_Sweep
                 List<float> listchild = new List<float>();
                 listy.Add(listchild);
                 tag.Add("f=10^" + Convert.ToString(fStartf + fStepf * i) + " Hz");
-                dtTCf.Columns.Add("f=10^" + Convert.ToString(fStartf + fStepf * i) + " Hz", typeof(float));
+                //dtTCf.Columns.Add("f=10^" + Convert.ToString(fStartf + fStepf * i) + " Hz", typeof(float));
             }
             plotThreadStart = new System.Threading.ThreadStart(ploter);
             plotThread = new System.Threading.Thread(plotThreadStart);
             plotThread.IsBackground = true;
             plotThread.Start();
+            chartTCf.ChartAreas[0].AxisY.IsStartedFromZero = false;
             System.Threading.Thread threadtestthread = new System.Threading.Thread(new System.Threading.ThreadStart(threadtest));
             threadtestthread.IsBackground = true;
             threadtestthread.Start();
-            dtTCf.Rows.Add(1.0F, 2.0F, 2.0F, 2.0F, 2.0F, 2.0F, 2.0F);
+            //dtTCf.Rows.Add(1.0F, 2.0F, 2.0F, 2.0F, 2.0F, 2.0F, 2.0F);
             //for (int j=0;j<=10000;j++)
             //{
             // listx.Add(j);
@@ -632,16 +646,16 @@ namespace TCf_Sweep
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            DataGridViewToCSV(dgvTCf);
+            //DataGridViewToCSV(dgvTCf);
         }
 
         private void writer()
         {
-            while(true)
-            {
-                System.Threading.Thread.Sleep(1000);
-                dtTCf.Rows.Add(1.0F, 2.0F, 2.0F, 2.0F, 2.0F, 2.0F, 2.0F);        
-            }
+            //while(true)
+            //{
+            //    System.Threading.Thread.Sleep(1000);
+            //    dtTCf.Rows.Add(1.0F, 2.0F, 2.0F, 2.0F, 2.0F, 2.0F, 2.0F);        
+            //}
         }
 
         private void test2_Click(object sender, EventArgs e)
@@ -656,9 +670,9 @@ namespace TCf_Sweep
 
         private void timerRefresh_Tick(object sender, EventArgs e)//Refresh progressbar and datagridview
         {
-            timerRefresh.Enabled = false;
-            progressBarProgress.Value += progressBarProgress.Step;
-            dgvTCf.Refresh();
+            //timerRefresh.Enabled = false;
+            //progressBarProgress.Value += progressBarProgress.Step;
+            //dgvTCf.Refresh();
         }
     }
 }
